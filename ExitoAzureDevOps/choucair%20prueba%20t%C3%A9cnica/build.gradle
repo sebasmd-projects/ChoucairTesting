@@ -1,0 +1,56 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:3.3.0"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.serenity-gradle-plugin'
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+ext {
+    serenityVersion = "3.6.22"
+    serenityCucumberVersion = "3.6.22"
+    slf4jSimpleVersion = "2.0.7"
+    junitVersion = "4.13.2"
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation group: 'junit', name: 'junit', version: "${junitVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-junit', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-core', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: "${serenityCucumberVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay-webdriver', version: "${serenityVersion}"
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: "${slf4jSimpleVersion}"
+    implementation "net.serenity-bdd:serenity-ensure:${serenityVersion}"
+
+}
+
+serenity {
+    testRoot = "ExitoTest"
+    requirementsDir = "src/test/resources/"
+}
+
+test {
+    systemProperties System.getProperties()
+    testLogging.showStandardStreams = true
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+test.finalizedBy(aggregate)
+gradle.startParameter.continueOnFailure = true

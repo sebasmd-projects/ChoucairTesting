@@ -1,0 +1,59 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:3.3.0"
+    }
+}
+
+plugins {
+    id "org.sonarqube" version "4.0.0.2929"
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+
+ext {
+    serenityVersion = "3.6.22"
+    serenityCucumberVersion = "3.6.22"
+    slf4jSimpleVersion = "2.0.7"
+    junitVersion = "4.13.2"
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation group: 'junit', name: 'junit', version: "${junitVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-junit', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-core', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: "${serenityCucumberVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay', version: "${serenityVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay-webdriver', version: "${serenityVersion}"
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: "${slf4jSimpleVersion}"
+    testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay-rest', version: "${serenityVersion}"
+    implementation 'com.google.code.gson:gson:2.8.9'
+}
+
+serenity {
+    testRoot = "org.dummy.restapi"
+    requirementsDir = "src/test/resources/features"
+}
+
+test {
+    systemProperties System.getProperties()
+    testLogging.showStandardStreams = true
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+gradle.startParameter.continueOnFailure = true
+test.finalizedBy(aggregate)
